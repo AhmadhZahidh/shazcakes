@@ -1,34 +1,54 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 80" width="320" height="80" aria-label="Shaz Cakes &amp; Surprises">
   <defs>
-    <linearGradient id="roseGold" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#C84376" />
-      <stop offset="50%" stop-color="#E86A9A" />
-      <stop offset="100%" stop-color="#D9B779" />
+    <!-- Animated Pink Shimmer Gradient running through Shaz -->
+    <linearGradient id="shimmerPink" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#382632">
+        <animate attributeName="stop-color" values="#382632;#C84376;#E86A9A;#D9B779;#382632" dur="4s" repeatCount="indefinite" />
+      </stop>
+      <stop offset="35%" stop-color="#C84376">
+        <animate attributeName="stop-color" values="#C84376;#E86A9A;#D9B779;#382632;#C84376" dur="4s" repeatCount="indefinite" />
+      </stop>
+      <stop offset="70%" stop-color="#E86A9A">
+        <animate attributeName="stop-color" values="#E86A9A;#D9B779;#382632;#C84376;#E86A9A" dur="4s" repeatCount="indefinite" />
+      </stop>
+      <stop offset="100%" stop-color="#D9B779">
+        <animate attributeName="stop-color" values="#D9B779;#382632;#C84376;#E86A9A;#D9B779" dur="4s" repeatCount="indefinite" />
+      </stop>
     </linearGradient>
+
+    <!-- Champagne Gold Glow -->
     <linearGradient id="goldGlow" x1="0%" y1="0%" x2="100%" y2="0%">
       <stop offset="0%" stop-color="#D9B779" stop-opacity="0.2" />
-      <stop offset="50%" stop-color="#D9B779" stop-opacity="1" />
+      <stop offset="50%" stop-color="#D9B779" stop-opacity="1">
+        <animate attributeName="stop-opacity" values="0.6;1;0.6" dur="2.5s" repeatCount="indefinite" />
+      </stop>
       <stop offset="100%" stop-color="#D9B779" stop-opacity="0.2" />
     </linearGradient>
   </defs>
   
-  <!-- Subtle decorative spark / star -->
-  <path d="M 175 14 Q 177 20 183 22 Q 177 24 175 30 Q 173 24 167 22 Q 173 20 175 14 Z" fill="#D9B779" opacity="0.9" />
-  <circle cx="187" cy="16" r="1.5" fill="#E86A9A" />
+  <!-- Subtle decorative spark / star with pulse -->
+  <path d="M 175 14 Q 177 20 183 22 Q 177 24 175 30 Q 173 24 167 22 Q 173 20 175 14 Z" fill="#D9B779">
+    <animateTransform attributeName="transform" type="scale" values="1;1.25;1" dur="2s" repeatCount="indefinite" transform-origin="175 22" />
+  </path>
+  <circle cx="187" cy="16" r="1.8" fill="#E86A9A">
+    <animate attributeName="opacity" values="0.3;1;0.3" dur="1.8s" repeatCount="indefinite" />
+  </circle>
 
-  <!-- Main Brand Name: Shaz -->
-  <text x="24" y="46" font-family="'Playfair Display', 'Cinzel', 'Georgia', serif" font-size="44" font-weight="700" letter-spacing="1.5" fill="#382632">
+  <!-- Main Brand Name: Shaz with animated running pink shimmer -->
+  <text x="24" y="46" font-family="'Playfair Display', 'Cinzel', 'Georgia', serif" font-size="44" font-weight="700" letter-spacing="1.5" fill="url(#shimmerPink)">
     Shaz
   </text>
   
   <!-- Subtle Heart / Spark flourish on the S -->
-  <circle cx="20" cy="18" r="2.5" fill="#E86A9A" opacity="0.85" />
+  <circle cx="20" cy="18" r="2.5" fill="#E86A9A">
+    <animate attributeName="r" values="2;3.2;2" dur="2s" repeatCount="indefinite" />
+  </circle>
   
   <!-- Divider line with gold champagne gradient -->
-  <line x1="24" y1="55" x2="260" y2="55" stroke="url(#goldGlow)" stroke-width="1.2" stroke-linecap="round" />
+  <line x1="24" y1="55" x2="260" y2="55" stroke="url(#goldGlow)" stroke-width="1.4" stroke-linecap="round" />
   
   <!-- Subtitle: CAKES & SURPRISES -->
-  <text x="26" y="69" font-family="'Montserrat', 'Century Gothic', -apple-system, sans-serif" font-size="10.5" font-weight="600" letter-spacing="4.8" fill="#C84376">
+  <text x="26" y="69" font-family="'Plus Jakarta Sans', 'Montserrat', -apple-system, sans-serif" font-size="10.5" font-weight="600" letter-spacing="4.8" fill="#C84376">
     CAKES &amp; SURPRISES
   </text>
 </svg>

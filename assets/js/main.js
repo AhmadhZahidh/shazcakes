@@ -3,17 +3,28 @@
  * SHAZ CAKES & SURPRISES — MAIN INTERACTION JAVASCRIPT
  * ====================================================================
  * Pure Vanilla JavaScript — Zero external build or server dependencies.
- * Fast, lightweight, accessible, and works 100% offline or online.
+ * Features:
+ * - Animated Pink Floating Particle Engine in Hero Banner
+ * - 3D Fluttering Butterflies with Sparkle Trail Drops
+ * - Animated Header "Shaz" with Running Gradient
+ * - Interactive Sweet Cake Customizer & Portion Calculator
+ * - Gallery Category Filters & Lightbox Image Viewer
+ * - Floating WhatsApp Speed Dial
+ * - Accessible and respect for prefers-reduced-motion
  * ====================================================================
  */
 
 document.addEventListener("DOMContentLoaded", () => {
   initNavbar();
+  initHeroParticles();
+  initButterflyInteractions();
+  initSweetCalculator();
   initGallery();
   initOccasions();
   initMessageBuilder();
   initScrollEffects();
   initBackToTop();
+  initSpeedDial();
   updateFooterInfo();
 });
 
@@ -65,7 +76,201 @@ function initNavbar() {
 }
 
 /**
- * 2. GALLERY, CATEGORY FILTER & LIGHTBOX
+ * 2. ANIMATED PINK FLOATING PARTICLE ENGINE (HERO BANNER)
+ */
+function initHeroParticles() {
+  const canvas = document.getElementById("heroParticlesCanvas");
+  if (!canvas) return;
+
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    canvas.style.display = "none";
+    return;
+  }
+
+  const ctx = canvas.getContext("2d");
+  let particles = [];
+  let width = (canvas.width = canvas.offsetWidth);
+  let height = (canvas.height = canvas.offsetHeight);
+
+  const colors = [
+    "rgba(232, 106, 154, 0.45)",  // Primary Pink
+    "rgba(200, 67, 118, 0.35)",  // Deep Rose
+    "rgba(217, 183, 121, 0.45)",  // Champagne Gold
+    "rgba(255, 228, 238, 0.65)",  // Blush Light Pink
+    "rgba(244, 232, 206, 0.55)"   // Pale Champagne
+  ];
+
+  function resize() {
+    if (!canvas) return;
+    width = canvas.width = canvas.offsetWidth;
+    height = canvas.height = canvas.offsetHeight;
+  }
+  window.addEventListener("resize", resize, { passive: true });
+
+  class Particle {
+    constructor() {
+      this.reset();
+    }
+    reset() {
+      this.x = Math.random() * width;
+      this.y = height + Math.random() * 40;
+      this.size = Math.random() * 4.5 + 1.5;
+      this.speedY = Math.random() * 0.7 + 0.3;
+      this.speedX = (Math.random() - 0.5) * 0.4;
+      this.color = colors[Math.floor(Math.random() * colors.length)];
+      this.alpha = Math.random() * 0.8 + 0.2;
+      this.pulseSpeed = Math.random() * 0.02 + 0.01;
+    }
+    update() {
+      this.y -= this.speedY;
+      this.x += this.speedX + Math.sin(this.y * 0.02) * 0.3;
+      this.alpha += Math.sin(this.y * this.pulseSpeed) * 0.01;
+
+      if (this.y < -10 || this.x < -10 || this.x > width + 10) {
+        this.reset();
+      }
+    }
+    draw() {
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+      ctx.fillStyle = this.color;
+      ctx.shadowBlur = 10;
+      ctx.shadowColor = "rgba(232, 106, 154, 0.4)";
+      ctx.fill();
+      ctx.shadowBlur = 0;
+    }
+  }
+
+  // Generate particles based on canvas size
+  const count = Math.min(Math.floor(width / 24), 50);
+  for (let i = 0; i < count; i++) {
+    const p = new Particle();
+    p.y = Math.random() * height; // distribute initially across screen
+    particles.push(p);
+  }
+
+  function animate() {
+    ctx.clearRect(0, 0, width, height);
+    particles.forEach((p) => {
+      p.update();
+      p.draw();
+    });
+    requestAnimationFrame(animate);
+  }
+  animate();
+}
+
+/**
+ * 3. 3D BUTTERFLY INTERACTIONS & SPARKLE TRAILS
+ */
+function initButterflyInteractions() {
+  const butterflies = document.querySelectorAll(".butterfly-flight-wrap");
+  butterflies.forEach((wrap) => {
+    // Interactive click makes butterfly do a joyful playful loop
+    wrap.addEventListener("click", () => {
+      wrap.style.transition = "transform 0.8s cubic-bezier(0.18, 0.89, 0.32, 1.28)";
+      wrap.style.transform = "scale(1.5) rotate(360deg)";
+      setTimeout(() => {
+        wrap.style.transform = "";
+      }, 900);
+    });
+
+    // Spawn tiny sparkle trail behind butterfly periodically
+    setInterval(() => {
+      if (document.hidden) return;
+      const rect = wrap.getBoundingClientRect();
+      const hero = document.querySelector(".hero");
+      if (!hero) return;
+      const heroRect = hero.getBoundingClientRect();
+
+      const dot = document.createElement("div");
+      dot.className = "butterfly-sparkle-dot";
+      dot.style.left = `${rect.left - heroRect.left + 20}px`;
+      dot.style.top = `${rect.top - heroRect.top + 20}px`;
+      hero.appendChild(dot);
+
+      setTimeout(() => dot.remove(), 1800);
+    }, 450);
+  });
+}
+
+/**
+ * 4. SWEET CREATION CALCULATOR & PORTION SELECTOR
+ */
+let selectedCakeTier = "Single Tier Celebration (1.0 kg • Serves 8-10)";
+let selectedCakeFlavour = "Rich Belgian Chocolate Fudge";
+let selectedCakeTopper = "Golden 3D Butterflies & Rosettes 🦋🌹";
+
+function initSweetCalculator() {
+  const tierCards = document.querySelectorAll(".calc-tier-card");
+  const flavourCards = document.querySelectorAll(".calc-flavour-card");
+  const topperCards = document.querySelectorAll(".calc-topper-card");
+  const summaryBox = document.getElementById("calcSummaryDetails");
+  const applyBtn = document.getElementById("applyCalculatorToFormBtn");
+
+  tierCards.forEach((card) => {
+    card.addEventListener("click", () => {
+      tierCards.forEach((c) => c.classList.remove("selected"));
+      card.classList.add("selected");
+      selectedCakeTier = card.getAttribute("data-tier");
+      updateCalculatorSummary();
+    });
+  });
+
+  flavourCards.forEach((card) => {
+    card.addEventListener("click", () => {
+      flavourCards.forEach((c) => c.classList.remove("selected"));
+      card.classList.add("selected");
+      selectedCakeFlavour = card.getAttribute("data-flavour");
+      updateCalculatorSummary();
+    });
+  });
+
+  topperCards.forEach((card) => {
+    card.addEventListener("click", () => {
+      topperCards.forEach((c) => c.classList.remove("selected"));
+      card.classList.add("selected");
+      selectedCakeTopper = card.getAttribute("data-topper");
+      updateCalculatorSummary();
+    });
+  });
+
+  function updateCalculatorSummary() {
+    if (summaryBox) {
+      summaryBox.innerHTML = `
+        <strong>Selected Creation:</strong> ${selectedCakeTier}<br>
+        <strong>Flavour:</strong> ${selectedCakeFlavour} • <strong>Decor:</strong> ${selectedCakeTopper}
+      `;
+    }
+  }
+
+  // One-click sync to WhatsApp Message Builder
+  if (applyBtn) {
+    applyBtn.addEventListener("click", () => {
+      const notesInput = document.getElementById("builderNotes");
+      const itemSelect = document.getElementById("builderItem");
+
+      if (itemSelect) {
+        itemSelect.value = "Custom Buttercream Cake";
+      }
+
+      if (notesInput) {
+        notesInput.value = `Cake Design: ${selectedCakeTier}\nFlavour: ${selectedCakeFlavour}\nDecor / Toppers: ${selectedCakeTopper}`;
+        notesInput.dispatchEvent(new Event("input"));
+      }
+
+      const plannerEl = document.getElementById("planner");
+      if (plannerEl) {
+        plannerEl.scrollIntoView({ behavior: "smooth" });
+      }
+
+      showToast("Custom cake configuration applied to WhatsApp enquiry!");
+    });
+  }
+}
+
+/**
+ * 5. GALLERY, CATEGORY FILTER & LIGHTBOX
  */
 let currentGalleryItems = [];
 let currentLightboxIndex = 0;
@@ -117,7 +322,6 @@ function initGallery() {
     });
   });
 
-  // Init Lightbox Modal listeners
   initLightbox();
 }
 
@@ -207,7 +411,7 @@ function renderFlyers(flyers, container) {
 }
 
 /**
- * 3. LIGHTBOX VIEWER
+ * 6. LIGHTBOX VIEWER
  */
 function initLightbox() {
   const modal = document.getElementById("lightboxModal");
@@ -221,12 +425,10 @@ function initLightbox() {
   prevBtn?.addEventListener("click", () => navigateLightbox(-1));
   nextBtn?.addEventListener("click", () => navigateLightbox(1));
 
-  // Close when clicking outside image box
   modal.addEventListener("click", (e) => {
     if (e.target === modal) closeLightbox();
   });
 
-  // Keyboard navigation
   document.addEventListener("keydown", (e) => {
     if (!modal.classList.contains("active")) return;
     if (e.key === "Escape") closeLightbox();
@@ -281,7 +483,7 @@ function updateLightboxContent() {
 }
 
 /**
- * 4. SPECIAL OCCASIONS WHATSAPP CARDS
+ * 7. SPECIAL OCCASIONS WHATSAPP CARDS
  */
 function initOccasions() {
   const occasionCards = document.querySelectorAll(".occasion-card");
@@ -296,7 +498,7 @@ function initOccasions() {
 }
 
 /**
- * 5. INTERACTIVE WHATSAPP CUSTOM MESSAGE BUILDER
+ * 8. INTERACTIVE WHATSAPP CUSTOM MESSAGE BUILDER
  */
 function initMessageBuilder() {
   const occasionSelect = document.getElementById("builderOccasion");
@@ -338,7 +540,6 @@ function initMessageBuilder() {
     }
   }
 
-  // Bind change events
   [occasionSelect, itemSelect, dateInput, budgetInput, notesInput].forEach((el) => {
     if (el) {
       el.addEventListener("input", refreshPreview);
@@ -346,7 +547,6 @@ function initMessageBuilder() {
     }
   });
 
-  // Copy button
   if (copyBtn) {
     copyBtn.addEventListener("click", () => {
       const text = generateMessage();
@@ -358,12 +558,33 @@ function initMessageBuilder() {
     });
   }
 
-  // Initial preview render
   refreshPreview();
 }
 
 /**
- * 6. SCROLL REVEALS & ENTRANCE ANIMATIONS
+ * 9. FLOATING WHATSAPP SPEED DIAL
+ */
+function initSpeedDial() {
+  const toggleBtn = document.getElementById("floatingWhatsAppBtn");
+  const dial = document.getElementById("whatsappSpeedDial");
+
+  if (!toggleBtn || !dial) return;
+
+  toggleBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    dial.classList.toggle("active");
+  });
+
+  // Close when clicking outside
+  document.addEventListener("click", (e) => {
+    if (!toggleBtn.contains(e.target) && !dial.contains(e.target)) {
+      dial.classList.remove("active");
+    }
+  });
+}
+
+/**
+ * 10. SCROLL REVEALS & ENTRANCE ANIMATIONS
  */
 function initScrollEffects() {
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
@@ -389,7 +610,7 @@ function initScrollEffects() {
 }
 
 /**
- * 7. BACK TO TOP
+ * 11. BACK TO TOP
  */
 function initBackToTop() {
   const btn = document.getElementById("backToTop");
@@ -409,7 +630,7 @@ function initBackToTop() {
 }
 
 /**
- * 8. FOOTER & CONTACT DETAILS SYNC
+ * 12. FOOTER & CONTACT DETAILS SYNC
  */
 function updateFooterInfo() {
   const yearEl = document.getElementById("currentYear");
@@ -418,7 +639,6 @@ function updateFooterInfo() {
   }
 
   if (window.SHAZ_CONFIG) {
-    // Dynamic Primary WhatsApp links
     document.querySelectorAll(".dynamic-wa-primary").forEach((el) => {
       const template = el.getAttribute("data-template") || "general";
       let msg = SHAZ_CONFIG.messages.general();
@@ -429,7 +649,6 @@ function updateFooterInfo() {
       el.href = SHAZ_CONFIG.buildWhatsAppUrl(msg);
     });
 
-    // Dynamic phone text displays
     document.querySelectorAll(".display-phone-primary").forEach((el) => {
       el.textContent = SHAZ_CONFIG.contact.whatsappPrimaryDisplay;
     });
@@ -469,9 +688,6 @@ function showToast(message) {
   }, 3200);
 }
 
-/**
- * Helper: Escape HTML to prevent XSS
- */
 function escapeHtml(str) {
   if (typeof str !== "string") return "";
   return str
