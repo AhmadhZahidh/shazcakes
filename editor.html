@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Local Catalogue Editor — Shaz Cakes &amp; Surprises</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" type="image/svg+xml" href="assets/images/icons/favicon.svg">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <style>
+    .editor-container {
+      max-width: 1080px;
+      margin: 40px auto;
+      padding: 0 24px;
+    }
+    .editor-notice-card {
+      background: #FFF0F5;
+      border: 2px solid var(--color-deep-rose);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      margin-bottom: 32px;
+      box-shadow: var(--shadow-sm);
+    }
+    .editor-card {
+      background: #ffffff;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--color-border);
+      padding: 32px;
+      margin-bottom: 32px;
+      box-shadow: var(--shadow-sm);
+    }
+    .editor-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 16px;
+    }
+    .editor-table th, .editor-table td {
+      padding: 12px 14px;
+      text-align: left;
+      border-bottom: 1px solid #f0e6eb;
+    }
+    .editor-table th {
+      background-color: #faf5f8;
+      color: var(--color-text-main);
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(4px);
+      z-index: 5000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .modal-box {
+      background: white;
+      border-radius: var(--radius-md);
+      max-width: 680px;
+      width: 100%;
+      padding: 32px;
+      box-shadow: var(--shadow-lg);
+    }
+  </style>
+</head>
+<body style="background-color: #faf6f8;">
+
+  <header class="header" style="position: static; height: 80px; background: white;">
+    <div class="container header-container">
+      <a href="index.html" class="brand-logo" aria-label="Return to Homepage">
+        <img src="assets/images/icons/logo.svg" alt="Shaz Cakes &amp; Surprises Logo">
+      </a>
+      <div style="display: flex; gap: 12px;">
+        <a href="index.html" class="btn btn-secondary btn-sm">← Back to Website</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="editor-container">
+    
+    <!-- Transparent Limitation Notice -->
+    <div class="editor-notice-card">
+      <h2 style="font-size: 1.35rem; color: var(--color-deep-rose); margin-bottom: 10px;">
+        🛠️ Local Browser Catalogue Editor (Drafting &amp; Testing Tool)
+      </h2>
+      <p style="font-size: 0.92rem; color: var(--color-text-main); line-height: 1.6; margin-bottom: 12px;">
+        This editor works completely in your browser using <code>localStorage</code>. It does not require a database, backend server, or login.
+      </p>
+      <div style="background: rgba(255,255,255,0.7); padding: 14px 18px; border-radius: 8px; font-size: 0.86rem; color: #555; line-height: 1.55;">
+        <strong>Important Web Development Note:</strong><br>
+        • Changes made here are saved <em>only on this browser/computer</em> so you can test new products easily.<br>
+        • They do <strong>not</strong> automatically alter the public website on the internet.<br>
+        • To make changes permanent on hosting, click the <strong>"Export Permanent Code"</strong> button below, copy the snippet, paste it into <code>assets/js/catalogue.js</code>, and re-upload your files!
+      </div>
+    </div>
+
+    <!-- Active Catalogue Section -->
+    <div class="editor-card">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 20px;">
+        <div>
+          <h3 style="font-size: 1.4rem; color: var(--color-text-main); margin-bottom: 4px;">Active Catalogue Items</h3>
+          <div id="storageStatusBadge">Checking storage...</div>
+        </div>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+          <button id="exportCodeBtn" class="btn btn-sm btn-primary">
+            Export Permanent Code
+          </button>
+          <button id="resetDefaultsBtn" class="btn btn-sm btn-secondary" style="color: #b91c1c;">
+            Reset to Defaults
+          </button>
+        </div>
+      </div>
+
+      <div style="overflow-x: auto;">
+        <table class="editor-table">
+          <thead>
+            <tr>
+              <th>Image</th>
+              <th>Product Title</th>
+              <th>Category</th>
+              <th>Description</th>
+              <th>Price Display</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="editorTableBody">
+            <!-- Dynamically populated -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Add New Creation Form -->
+    <div class="editor-card">
+      <h3 style="font-size: 1.4rem; color: var(--color-text-main); margin-bottom: 18px;">Add New Creation</h3>
+      
+      <form id="addProductForm" style="display: flex; flex-direction: column; gap: 18px;">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="newProdTitle">Product Title *</label>
+            <input type="text" id="newProdTitle" class="form-control" placeholder="e.g. Lavender Dream Birthday Cake" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="newProdCategory">Category *</label>
+            <select id="newProdCategory" class="form-control" required>
+              <option value="cakes">Custom Cakes &amp; Cupcakes</option>
+              <option value="chocolate">Chocolate Bouquets</option>
+              <option value="flowers">Fresh Flower Bouquets</option>
+              <option value="frames">Custom Photo Frames</option>
+              <option value="hampers">Surprise Hampers &amp; Gifts</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="newProdCategoryLabel">Category Display Label</label>
+            <input type="text" id="newProdCategoryLabel" class="form-control" placeholder="e.g. Designer Buttercream Cake">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="newProdTag">Occasion Tag</label>
+            <input type="text" id="newProdTag" class="form-control" placeholder="e.g. Birthdays &amp; Milestones">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="newProdDesc">Description *</label>
+          <textarea id="newProdDesc" class="form-control" rows="3" placeholder="Describe the cake, flavours, colours, packaging..." required></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="newProdPrice">Price Display</label>
+            <input type="text" id="newProdPrice" class="form-control" placeholder="e.g. Custom Quote or Rs. 4,500">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="newProdImagePath">Image Path (or use file upload below)</label>
+            <input type="text" id="newProdImagePath" class="form-control" placeholder="assets/images/products/my-new-cake.jpg">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="newProdImageFile">Or Select Local Image File (Auto converts to browser preview)</label>
+          <input type="file" id="newProdImageFile" class="form-control" accept="image/*">
+          <img id="imagePreview" alt="Preview" style="display: none; max-width: 140px; margin-top: 10px; border-radius: 8px; border: 1px solid #ddd;">
+        </div>
+
+        <div style="margin-top: 10px;">
+          <button type="submit" class="btn btn-primary">
+            + Add to Local Catalogue
+          </button>
+        </div>
+      </form>
+    </div>
+
+  </main>
+
+  <!-- Export Code Modal -->
+  <div id="exportModal" class="modal-overlay">
+    <div class="modal-box">
+      <h3 style="font-size: 1.3rem; margin-bottom: 8px;">Export Permanent Code Snippet</h3>
+      <p style="font-size: 0.88rem; color: #666; margin-bottom: 16px;">
+        To make these items appear permanently on your live website, copy this code and paste it over the <code>SHAZ_DEFAULT_PRODUCTS</code> array in <code>assets/js/catalogue.js</code>:
+      </p>
+      <textarea id="exportCodeOutput" style="width: 100%; height: 260px; font-family: monospace; font-size: 0.85rem; padding: 12px; border-radius: 8px; border: 1px solid #ccc; margin-bottom: 16px;" readonly></textarea>
+      <div style="display: flex; justify-content: flex-end; gap: 12px;">
+        <button id="closeExportBtn" class="btn btn-secondary btn-sm">Close</button>
+        <button id="copyExportBtn" class="btn btn-primary btn-sm">Copy Code Snippet</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/catalogue.js"></script>
+  <script src="assets/js/editor.js"></script>
+</body>
+</html>

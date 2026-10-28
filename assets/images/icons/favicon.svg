@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFF0F5" />
+      <stop offset="100%" stop-color="#FFE4EE" />
+    </linearGradient>
+    <linearGradient id="roseGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E86A9A" />
+      <stop offset="100%" stop-color="#C84376" />
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="16" fill="url(#bgGrad)" />
+  <rect x="2" y="2" width="60" height="60" rx="14" fill="none" stroke="#D9B779" stroke-width="1.5" opacity="0.6" />
+  <!-- Sparkle -->
+  <path d="M 46 16 Q 47 20 51 21 Q 47 22 46 26 Q 45 22 41 21 Q 45 20 46 16 Z" fill="#D9B779" />
+  <text x="32" y="45" font-family="'Playfair Display', 'Georgia', serif" font-size="34" font-weight="700" fill="url(#roseGrad)" text-anchor="middle">S</text>
+</svg>
